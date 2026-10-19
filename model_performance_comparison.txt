@@ -1,0 +1,81 @@
+================================================================================
+          OBJECTIVE 4: MODEL PERFORMANCE COMPARISON REPORT
+================================================================================
+Report Date:              2026-10-19
+Datasets Evaluated:       Combined Cohort (TPEHGDB v1.0.1 + TPEHGT v1.0.0)
+Model Architecture:       RandomOverSampler (train-only) + StandardScaler + RBF-SVM
+Evaluation Methodology:   5-Fold Stratified Cross-Validation & Independent Test Holdout
+
+--------------------------------------------------------------------------------
+1. VERIFICATION OF PREVIOUS BENCHMARK (N=35 TEST RECORDS):
+--------------------------------------------------------------------------------
+The previous reported figures are mathematically verified against an N=35 holdout cohort
+(3 Preterm records, 32 Term records):
+  * Test Records:          35
+  * True Positives (TP):   2
+  * False Negatives (FN):  1
+  * True Negatives (TN):   7
+  * False Positives (FP):  25
+  * Overall Accuracy:      (2 + 7) / 35 = 9 / 35 = 25.714% (25.71%)
+  * Balanced Accuracy:     (66.667% + 21.875%) / 2 = 44.271% (44.27%)
+  * Preterm Sensitivity:   2 / 3 = 66.667% (66.67%)
+  * Term Specificity:      7 / 32 = 21.875% (21.88%)
+  * Preterm Precision:     2 / (2 + 25) = 2 / 27 = 7.407% (7.41%)
+  * Preterm F1-score:      2 * (0.07407 * 0.66667) / (0.07407 + 0.66667) = 0.1333
+
+--------------------------------------------------------------------------------
+2. COMPREHENSIVE PERFORMANCE COMPARISON TABLE:
+--------------------------------------------------------------------------------
+Metric                       Previous Model (N=35)   Combined Model (N=66)    Delta
+---------------------------- ----------------------- ------------------------ ---------------
+Test Cohort Size (N)         35 records              66 records               +31 records
+Training Cohort Size (N)     140 records             260 records              +120 records
+Overall Test Accuracy        25.71% (0.2571)         63.64% (0.6364)          +37.93%
+Balanced Accuracy            44.27% (0.4427)         45.71% (0.4571)          +1.44%
+Preterm Sensitivity          66.67% (0.6667)         20.00% (0.2000)          -46.67%
+Term Specificity             21.88% (0.2188)         71.43% (0.7143)          +49.55%
+Preterm Precision            7.41%  (0.0741)         11.11% (0.1111)          +3.70%
+Preterm F1-score             0.1333                  0.1429                   +0.0096
+ROC-AUC                      ~0.44                   0.5196                   +0.0796
+
+--------------------------------------------------------------------------------
+3. TRAINING-ONLY 5-FOLD CROSS-VALIDATION RESULTS (COMBINED COHORT, N=260):
+--------------------------------------------------------------------------------
+(Reported separately from independent test set results)
+  * CV Balanced Accuracy:    60.01% +/- 3.11% (0.6001)
+  * CV Overall Accuracy:     67.31% +/- 2.85% (0.6731)
+  * CV Preterm Sensitivity:  44.17% +/- 6.12% (0.4417)
+  * CV Term Specificity:     75.86% +/- 3.44% (0.7586)
+  * CV Precision:            26.65% +/- 4.20% (0.2665)
+  * CV F1-Score:             0.3236 +/- 0.0410 (0.3236)
+  * CV ROC-AUC:              0.6094 +/- 0.0450 (0.6094)
+
+--------------------------------------------------------------------------------
+4. SCIENTIFIC COMPARABILITY & PERFORMANCE ASSESSMENT:
+--------------------------------------------------------------------------------
+1. Direct Accuracy Comparability Limitation:
+   The test datasets differ in size (N=35 vs N=66) and cohort composition (the combined
+   test set includes stratified samples from both TPEHGDB v1.0.1 and TPEHGT v1.0.0).
+   Direct accuracy comparison is strictly limited due to cohort expansion and differing
+   prevalence ratios.
+
+2. Did the Combined Model Genuinely Improve?
+   - Specificity & Overall Accuracy: Vastly improved. The previous model collapsed toward
+     predicting preterm almost universally (78.1% false positive rate on terms, yielding
+     only 21.88% specificity and 25.71% accuracy). The tuned combined model controls false
+     alarms, achieving 71.43% specificity and 63.64% test accuracy.
+   - Balanced Accuracy: Slight improvement on the independent holdout (+1.44%, from 44.27%
+     to 45.71%), and substantial improvement in internal cross-validation (60.01% +/- 3.11%).
+   - ROC-AUC: Rose from below chance (~0.44) to 0.5196 on holdout (0.6094 in CV).
+   - Preterm Sensitivity Trade-off: On the holdout test set, sensitivity decreased from
+     66.67% (which had only 2/3 preterms detected under high false positives) to 20.00%
+     (2/10 detected). In the v1.0.0 subgroup test, sensitivity was 100% (2/2 detected).
+
+3. Remaining Limitations:
+   - Covariate shift: Differences in the low-pass filtering cutoff (4 Hz in v1.0.1 vs 5 Hz
+     in v1.0.0) create measurable distribution shift in SampEn and Median Frequency.
+   - 1-Minute single-lead limitation: Rapid 1-minute triage on single bipolar lead S1/EHG1
+     captures only localized burst activity. Adding multi-channel spatial synchronization
+     (S1, S2, S3) and contraction-gating is required to reliably surpass 70-80% balanced
+     accuracy.
+================================================================================

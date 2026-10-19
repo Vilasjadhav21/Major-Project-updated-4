@@ -1,0 +1,13 @@
+================================================================================
+     TPEHGDB v1.0.1 FEATURE EXTRACTION & QUALITY REPORT
+================================================================================
+Total records in dataset:     300
+Successfully extracted:       300
+Failed records:               0
+Term records (0):             262
+Preterm records (1):          38
+Signal channel used:          S1 0.08-4 Hz (1_DOCFILT-4-0.08-4)
+Window extracted:             180.0s - 240.0s (60s, 1200 samples)
+Decomposition method:         EMD -> IMF-1 & IMF-2
+Missing / Infinite features:  0
+================================================================================

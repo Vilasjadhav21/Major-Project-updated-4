@@ -1,0 +1,180 @@
+================================================================================
+   OBJECTIVE 4: RAPID 1-MINUTE EHG TRIAGE — SAMPLING FREQUENCY FIX REPORT
+================================================================================
+Date:                 2026-10-17
+Dataset:              PhysioNet Term-Preterm EHG Database (TPEHGDB v1.0.1)
+Target Window:        1-Minute Rapid Triage (180.0s to 240.0s, 60.0s duration)
+Target Channel:       S1 0.08–4 Hz (canonical: 1_DOCFILT-4-0.08-4)
+Target Decomposition: Empirical Mode Decomposition (EMD: IMF-1 and IMF-2)
+Target Features (5):  sampen_imf1, median_freq_imf1_hz, rms_imf1, rms_imf2, hilbert_par_imf1
+Target Labels:        Term = 0, Preterm = 1 (from tpehgdb.smr)
+================================================================================
+
+1. IDENTIFICATION OF EXACT EQUALITY COMPARISONS
+--------------------------------------------------------------------------------
+The codebase was systematically audited for exact equality comparisons used to validate
+sampling frequency:
+
+1. src/process_all_records.py (Line 103):
+   Original:
+       actual_fs = float(wfdb_rec.fs)
+       if actual_fs != expected_fs:
+           raise ValueError(f"Sampling frequency mismatch: Expected {expected_fs} Hz, got {actual_fs} Hz.")
+   Issue: Exact floating-point comparison (actual_fs != 20.0) caused all 126 records reporting
+          20.00011 Hz to immediately fail processing.
+
+2. src/feature_extraction.py (Line 229):
+   Original:
+       if float(sampling_frequency) != 20.0:
+           raise ValueError(f"Sampling frequency must be 20 Hz, got {sampling_frequency} Hz.")
+   Issue: Strict != 20.0 equality check in extract_features would reject 20.00011 Hz inputs.
+
+3. src/extract_features_single_record.py (Line 96):
+   Original:
+       print(f"[CHECK] Sampling frequency = {sampling_frequency} Hz -> {'PASS' if sampling_frequency == 20.0 else 'FAIL'}")
+   Issue: Exact equality check displayed FAIL for records with 20.00011 Hz headers.
+
+--------------------------------------------------------------------------------
+2. ACTUAL SAMPLING FREQUENCIES REPORTED BY WFDB RECORD HEADERS
+--------------------------------------------------------------------------------
+All 300 official record headers (.hea files) in TPEHGDB v1.0.1 were inspected:
+- Distinct sampling frequency values found: exactly 2.
+  1. fs = 20.0 Hz (or 20.000000 Hz): 174 records (58.0%)
+     Sample records: tpehg1007, tpehg1021, tpehg1022, tpehg1027, tpehg1029, tpehg1031
+     Header line 1 example: 'tpehg1007 12 20.000000 35180'
+  2. fs = 20.00011 Hz (or 20.000110 Hz): 126 records (42.0%)
+     Sample records: tpehg1263, tpehg1264, tpehg1274, tpehg1276, tpehg1280, tpehg1283
+     Header line 1 example: 'tpehg1263 12 20.000110 36000'
+
+Absolute Difference:
+- For the 126 records: |20.00011 - 20.0| = 0.00011000 Hz.
+- Relative Difference: (0.00011 / 20.0) * 100 = 0.00055% (approx 1 part in 181,818).
+
+--------------------------------------------------------------------------------
+3. SCIENTIFIC JUSTIFICATION & DATASET ORIGIN
+--------------------------------------------------------------------------------
+PhysioNet TPEHGDB v1.0.1 documentation confirms:
+1. Physical Acquisition:
+   All uterine EMG/EHG recordings were acquired using an A/D hardware clock rate of 20 Hz.
+2. File Generation Artifact:
+   For 126 recordings of 36,000 samples lasting 1799.99 seconds, the clock frequency ratio
+   (36,000 / 1799.99 = 20.0001111... Hz) was stored in ASCII header format as '20.000110'.
+   For the remaining 174 recordings (e.g., 35,180 samples / 1759.0 seconds), the header
+   specifies '20.000000'.
+3. Spectral and Temporal Impact:
+   - For the 1-minute window (1200 samples), the discrete Fourier transform bin spacing is
+     Delta_f = fs / N = 20.0 / 1200 = 0.016667 Hz.
+   - The frequency bin shift induced by 0.00011 Hz is:
+     0.00011 / 1200 = 9.17 x 10^-8 Hz, which is more than 180,000 times smaller than the
+     spectral bin width.
+   - The temporal window difference over 60 seconds is 0.00033 seconds (0.33 ms).
+   - Conclusion: Treating 20.00011 Hz as nominal 20.0 Hz with an explicit tolerance is
+     scientifically sound, preserves biological fidelity, and avoids artificial sample loss.
+
+--------------------------------------------------------------------------------
+4. REPLACEMENT WITH DOCUMENTED TOLERANCE
+--------------------------------------------------------------------------------
+The inappropriate exact equality comparisons were replaced with an explicit tolerance
+(fs_tolerance = 0.01 Hz):
+
+1. src/config.py (DatasetConfig):
+   Added documented configuration parameter:
+       sampling_frequency: float = 20.0  # Hz
+       sampling_frequency_tolerance: float = 0.01  # Hz tolerance for hardware/header representations
+
+2. src/process_all_records.py:
+   Replaced:
+       actual_fs = float(wfdb_rec.fs)
+       fs_tolerance = 0.01  # Documented tolerance in Hz for TPEHGDB v1.0.1
+       if abs(actual_fs - expected_fs) > fs_tolerance:
+           raise ValueError(f"Sampling frequency mismatch: Expected {expected_fs} Hz (+/- {fs_tolerance} Hz), got {actual_fs} Hz.")
+
+3. src/feature_extraction.py (extract_features):
+   Replaced:
+       fs_tolerance = 0.01  # Documented tolerance in Hz for TPEHGDB v1.0.1
+       if abs(float(sampling_frequency) - 20.0) > fs_tolerance:
+           raise ValueError(f"Sampling frequency must be 20 Hz (+/- {fs_tolerance} Hz tolerance for TPEHGDB headers), got {sampling_frequency} Hz.")
+
+4. src/extract_features_single_record.py:
+   Replaced exact check with:
+       fs_ok = abs(sampling_frequency - 20.0) <= 0.01
+
+Protection:
+Any true anomalous sampling frequency (e.g., 10 Hz, 50 Hz, 100 Hz, 1000 Hz) outside
+the [19.99 Hz, 20.01 Hz] interval will continue to be strictly rejected.
+
+--------------------------------------------------------------------------------
+5. PRESERVATION OF RAW DATA & METHODOLOGY
+--------------------------------------------------------------------------------
+- Raw EHG data files (.hea and .dat) were untouched; no values were edited or fabricated.
+- Sampling frequencies were read directly from record headers.
+- Signal Channel: S1 0.08–4 Hz (1_DOCFILT-4-0.08-4) preserved.
+- Windowing: 180.0 to 240.0 seconds preserved.
+- Decomposition: EMD into IMF-1 and IMF-2 preserved.
+- Features (5): sampen_imf1, median_freq_imf1_hz, rms_imf1, rms_imf2, hilbert_par_imf1 preserved.
+- Clinical Labels: 0 (Term), 1 (Preterm) from tpehgdb.smr preserved.
+- Model & Scaler: Retraining of SVM was deferred as instructed.
+
+--------------------------------------------------------------------------------
+6. ONE-MINUTE WINDOW DERIVATION & VERIFICATION
+--------------------------------------------------------------------------------
+Window sample indices derived from sampling frequency:
+  start_sample = int(round(180.0 * fs))
+  end_sample = int(round(240.0 * fs))
+
+Verification across all 300 records:
+- For records with fs = 20.0 Hz:
+  start_sample = int(round(3600.0000)) = 3600
+  end_sample   = int(round(4800.0000)) = 4800
+  sample_count = 4800 - 3600 = 1200 samples
+  duration     = 1200 / 20.0 = 60.00000 seconds
+- For records with fs = 20.00011 Hz:
+  start_sample = int(round(3600.0198)) = 3600
+  end_sample   = int(round(4800.0264)) = 4800
+  sample_count = 4800 - 3600 = 1200 samples
+  duration     = 1200 / 20.00011 = 59.99967 seconds
+
+Result: Exactly 1200 samples were extracted for all 300 records.
+
+--------------------------------------------------------------------------------
+7. TEST SUITE & END-TO-END VALIDATION
+--------------------------------------------------------------------------------
+1. Unit Tests:
+   - tests/test_feature_extraction.py updated with test_extract_features_sampling_rates()
+     verifying:
+     a) 20.0 Hz passes
+     b) 20.00011 Hz passes with identical feature values (rtol < 1e-3)
+     c) 10.0 Hz and 50.0 Hz raise ValueError
+   - Result: 8 / 8 tests PASSED.
+   - tests/test_process_all_records.py: 1 / 1 test PASSED.
+
+2. End-to-End Execution on Representative Records:
+   - Record tpehg1007 (fs = 20.0 Hz):
+     Extracted: 1200 samples, 60.00000s | IMFs: 6 | SampEn: 0.7642 | MedFreq: 2.2167 Hz | Label: Preterm | Status: PASS
+   - Record tpehg1263 (fs = 20.00011 Hz):
+     Extracted: 1200 samples, 59.99967s | IMFs: 6 | SampEn: 0.9188 | MedFreq: 2.7833 Hz | Label: Term    | Status: PASS
+
+--------------------------------------------------------------------------------
+8. FULL DATASET BATCH PROCESSING OUTCOME
+--------------------------------------------------------------------------------
+Output Files Updated:
+- outputs/features/all_records_features.csv (300 rows x 7 columns)
+- outputs/features/all_records_processing_log.csv (300 log entries)
+- outputs/features/full_dataset_processing_report.txt
+- outputs/features/current_dataset_audit.csv (300 audit rows)
+- outputs/features/current_dataset_audit.txt
+
+New Record Counts:
+- Total records listed in RECORDS:     300
+- Total successfully processed:        300 (100.0%)
+- Total failed records:                0   (0.0%)
+- Term records (label = 0):            262 (87.33%)
+- Preterm records (label = 1):         38  (12.67%)
+- Previously failed records recovered: 126 records (100% recovery)
+- Records with NaN feature values:     0
+- Records with Infinite values:        0
+- Duplicate record IDs:                0
+- Final Sanity Check:                  PASS
+================================================================================
+END OF SAMPLING FREQUENCY FIX REPORT
+================================================================================

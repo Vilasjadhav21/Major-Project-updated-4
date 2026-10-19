@@ -1,0 +1,46 @@
+================================================================================
+          OBJECTIVE 4: DUAL DATASET AUDIT REPORT (v1.0.1 & v1.0.0)
+================================================================================
+
+1. DATASET: PhysioNet TPEHGDB v1.0.1
+--------------------------------------------------------------------------------
+  Storage Location:            C:\Users\vilasjadhav\Major Project\Objective4_EHG_Rapid_Triage\data\tpehgdb
+  Total Records in RECORDS:    300
+  Available .hea Files:        300
+  Available .dat Files:        300
+  WFDB Readable Records:       300
+  Sampling Frequencies:        [20.0, 20.00011] Hz
+  Channel Count:               12 channels
+  Signal Units:                mV
+  Metadata File:               data/tpehgdb/tpehgdb.smr
+  Term Records (label=0):      262
+  Preterm Records (label=1):   38
+  Non-pregnant Records:        0
+  Missing / Corrupted Records: 0
+
+2. DATASET: PhysioNet Term-Preterm EHG with Tocogram v1.0.0 (TPEHGT)
+--------------------------------------------------------------------------------
+  Storage Location:            C:\Users\vilasjadhav\Major Project\Objective4_EHG_Rapid_Triage\data\tpehgt_v1.0.0
+  Total Records in RECORDS:    31
+  Available .hea Files:        31
+  Available .dat Files:        31
+  WFDB Readable Records:       31
+  Sampling Frequencies:        [20.0] Hz
+  Channel Count:               8 channels (3 EHG raw, 3 EHG filtered, 1 TOCO raw, 1 TOCO filtered)
+  Signal Units:                mV
+  Metadata Source:             Embedded header comments (.hea)
+  Term Records (label=0):      13
+  Preterm Records (label=1):   13
+  Non-pregnant (EXCLUDED):     5
+  Missing / Corrupted Records: 0
+
+3. COMBINED COHORT SUMMARY FOR DELIVERY-OUTCOME TASK
+--------------------------------------------------------------------------------
+  Total Candidate Records:     331
+  Excluded Non-Pregnant:       5
+  Failed / Unreadable Records: 0
+  Eligible Pregnancy Records:  326
+    - Eligible Term (0):       275 (262 v1.0.1 + 13 v1.0.0)
+    - Eligible Preterm (1):    51 (38 v1.0.1 + 13 v1.0.0)
+  Class Imbalance Ratio:       5.39:1 (Term:Preterm)
+================================================================================

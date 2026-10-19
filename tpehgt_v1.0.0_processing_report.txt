@@ -1,0 +1,47 @@
+================================================================================
+     TPEHGT v1.0.0 FEATURE EXTRACTION & QUALITY REPORT
+================================================================================
+Total records in dataset:     31
+Successfully extracted:       26
+Excluded Non-pregnant:       5
+Failed records:               0
+Term records (0):             13
+Preterm records (1):          13
+Signal channel used:          EHG1_Butter-4-bi-0.08-5 (bipolar lead 1, filtered)
+Window extracted:             180.0s - 240.0s (60s, 1200 samples)
+Decomposition method:         EMD -> IMF-1 & IMF-2
+Missing / Infinite features:  0
+
+Processing Log Summary:
+  tpehgt_n001  | EXCLUDED   | Non-pregnant control record (not applicable to delivery outcome)
+  tpehgt_n002  | EXCLUDED   | Non-pregnant control record (not applicable to delivery outcome)
+  tpehgt_n003  | EXCLUDED   | Non-pregnant control record (not applicable to delivery outcome)
+  tpehgt_n004  | EXCLUDED   | Non-pregnant control record (not applicable to delivery outcome)
+  tpehgt_n005  | EXCLUDED   | Non-pregnant control record (not applicable to delivery outcome)
+  tpehgt_p001  | SUCCESS    | Successfully extracted 5 IMF features
+  tpehgt_p002  | SUCCESS    | Successfully extracted 5 IMF features
+  tpehgt_p003  | SUCCESS    | Successfully extracted 5 IMF features
+  tpehgt_p004  | SUCCESS    | Successfully extracted 5 IMF features
+  tpehgt_p005  | SUCCESS    | Successfully extracted 5 IMF features
+  tpehgt_p006  | SUCCESS    | Successfully extracted 5 IMF features
+  tpehgt_p007  | SUCCESS    | Successfully extracted 5 IMF features
+  tpehgt_p008  | SUCCESS    | Successfully extracted 5 IMF features
+  tpehgt_p009  | SUCCESS    | Successfully extracted 5 IMF features
+  tpehgt_p010  | SUCCESS    | Successfully extracted 5 IMF features
+  tpehgt_p011  | SUCCESS    | Successfully extracted 5 IMF features
+  tpehgt_p012  | SUCCESS    | Successfully extracted 5 IMF features
+  tpehgt_p013  | SUCCESS    | Successfully extracted 5 IMF features
+  tpehgt_t001  | SUCCESS    | Successfully extracted 5 IMF features
+  tpehgt_t002  | SUCCESS    | Successfully extracted 5 IMF features
+  tpehgt_t003  | SUCCESS    | Successfully extracted 5 IMF features
+  tpehgt_t004  | SUCCESS    | Successfully extracted 5 IMF features
+  tpehgt_t005  | SUCCESS    | Successfully extracted 5 IMF features
+  tpehgt_t006  | SUCCESS    | Successfully extracted 5 IMF features
+  tpehgt_t007  | SUCCESS    | Successfully extracted 5 IMF features
+  tpehgt_t008  | SUCCESS    | Successfully extracted 5 IMF features
+  tpehgt_t009  | SUCCESS    | Successfully extracted 5 IMF features
+  tpehgt_t010  | SUCCESS    | Successfully extracted 5 IMF features
+  tpehgt_t011  | SUCCESS    | Successfully extracted 5 IMF features
+  tpehgt_t012  | SUCCESS    | Successfully extracted 5 IMF features
+  tpehgt_t013  | SUCCESS    | Successfully extracted 5 IMF features
+================================================================================

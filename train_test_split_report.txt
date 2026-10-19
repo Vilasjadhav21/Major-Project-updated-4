@@ -1,0 +1,42 @@
+================================================================================
+      OBJECTIVE 4: STRATIFIED TRAIN/TEST SPLIT INTEGRITY REPORT
+================================================================================
+
+1. SPLIT SUMMARY:
+--------------------------------------------------------------------------------
+  Total Cohort Records:        326
+  Training Split (80.0%):      260
+  Holdout Test Split (20.0%):  66
+  Random State Seed:           42
+  Record Overlap:              0 (PASS - Strictly Disjoint)
+
+2. TRAINING SPLIT COMPOSITION (N=260):
+--------------------------------------------------------------------------------
+  Term Records (0):            219
+  Preterm Records (1):         41
+  v1.0.1 Records:              239
+  v1.0.0 Records:              21
+  Imbalance Ratio:             5.34:1
+
+3. INDEPENDENT TEST SPLIT COMPOSITION (N=66):
+--------------------------------------------------------------------------------
+  Term Records (0):            56
+  Preterm Records (1):         10
+  v1.0.1 Records:              61
+  v1.0.0 Records:              5
+  Imbalance Ratio:             5.60:1
+
+4. SUBGROUP MATRIX:
+--------------------------------------------------------------------------------
+Training Split Subgroups (Rows=Dataset, Cols=Label):
+label              0   1
+dataset_version         
+v1.0.0            10  11
+v1.0.1           209  30
+
+Test Split Subgroups (Rows=Dataset, Cols=Label):
+label             0  1
+dataset_version       
+v1.0.0            3  2
+v1.0.1           53  8
+================================================================================

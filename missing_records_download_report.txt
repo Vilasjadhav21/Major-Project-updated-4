@@ -1,0 +1,70 @@
+================================================================================
+   OBJECTIVE 4: RAPID 1-MINUTE EHG TRIAGE — MISSING RECORDS DOWNLOAD REPORT
+================================================================================
+Report Date:              2026-10-17
+Official Repository:     PhysioNet TPEHGDB v1.0.1 (https://physionet.org/content/tpehgdb/1.0.1/)
+Download Endpoint:        https://physionet.org/files/tpehgdb/1.0.1/
+Target Destination:       c:\Users\vilasjadhav\Major Project\Objective4_EHG_Rapid_Triage\data\tpehgdb\tpehgdb
+--------------------------------------------------------------------------------
+1. RECOVERY METRICS SUMMARY
+--------------------------------------------------------------------------------
+Total Records Attempted:             285 (all 285 failed records from missing_records.csv)
+Successfully Recovered Records:      3
+Records Still Missing:               282
+Download Failures / Deferred:        282
+Original 15 Records Preserved:       YES (100% verified)
+New Total Valid Local Records:       18 records (up from 15)
+--------------------------------------------------------------------------------
+2. RECOVERED RECORDS VERIFICATION
+--------------------------------------------------------------------------------
+The following records were successfully recovered, downloaded from PhysioNet, and validated:
+
+  - Record: tpehg1070    | .hea size:  1001 B | .dat size:  847680 B | Fs: 20.0 Hz | Channels: 12 | Samples: 35320 (1766.0s) | WFDB Integrity: PASS
+  - Record: tpehg1177    | .hea size:  1005 B | .dat size:  844800 B | Fs: 20.0 Hz | Channels: 12 | Samples: 35200 (1760.0s) | WFDB Integrity: PASS
+  - Record: tpehg1205    | .hea size:  1024 B | .dat size:  851040 B | Fs: 20.0 Hz | Channels: 12 | Samples: 35460 (1773.0s) | WFDB Integrity: PASS
+
+--------------------------------------------------------------------------------
+3. PRESERVATION AUDIT OF ORIGINAL 15 VALID RECORDS
+--------------------------------------------------------------------------------
+All 15 pre-existing valid records were untouched and completely preserved:
+  [PRESERVED] tpehg1007: .hea=1002B, .dat=844320B
+  [PRESERVED] tpehg1021: .hea=1021B, .dat=846240B
+  [PRESERVED] tpehg1022: .hea=1010B, .dat=845760B
+  [PRESERVED] tpehg1027: .hea=1010B, .dat=847680B
+  [PRESERVED] tpehg1029: .hea=1012B, .dat=846720B
+  [PRESERVED] tpehg1031: .hea=1020B, .dat=844320B
+  [PRESERVED] tpehg1039: .hea=1005B, .dat=848160B
+  [PRESERVED] tpehg1065: .hea=1014B, .dat=848160B
+  [PRESERVED] tpehg1183: .hea=993B, .dat=847680B
+  [PRESERVED] tpehg1188: .hea=1004B, .dat=846240B
+  [PRESERVED] tpehg1192: .hea=1021B, .dat=848640B
+  [PRESERVED] tpehg1197: .hea=1006B, .dat=845760B
+  [PRESERVED] tpehg1201: .hea=983B, .dat=851040B
+  [PRESERVED] tpehg1202: .hea=1015B, .dat=847680B
+  [PRESERVED] tpehg1203: .hea=1005B, .dat=845760B
+
+--------------------------------------------------------------------------------
+4. REASONS FOR REMAINING FAILURES / NETWORK BANDWIDTH BOTTLENECK
+--------------------------------------------------------------------------------
+Affected Records: 282 records (Category A: both .hea and .dat missing).
+Detailed Root Cause & Diagnostic Findings:
+  1. Network Access & Authentication: PhysioNet endpoints are accessible without login (HTTP 200).
+  2. Server Throttling & Bandwidth Limit: Empirical testing measured effective server transfer
+     rate at ~9.4 KB/s for large binary files from PhysioNet servers.
+  3. Volume Requirement: The remaining 282 records require downloading 564 files
+     (282 .hea and 282 .dat files) totaling approximately 240 MB.
+  4. Transfer Duration: At 9.4 KB/s, downloading 240 MB requires ~25,500 seconds (~7.1 hours).
+  5. In accordance with safety rules, the remaining 282 records were not silently skipped;
+     their exact missing status and failure reason have been logged.
+
+--------------------------------------------------------------------------------
+5. RECOMMENDED NEXT STEPS FOR FULL 300-RECORD RECOVERY
+--------------------------------------------------------------------------------
+Option A: Execute a dedicated background download task using the official published zip archive:
+          URL: https://physionet.org/static/published-projects/tpehgdb/term-preterm-ehg-database-1.0.1.zip
+          Size: 257,471,447 bytes (~245 MB).
+Option B: Proceed with model training and feature extraction using the current expanded set
+          of 18 verified records.
+================================================================================
+END OF DOWNLOAD REPORT
+================================================================================

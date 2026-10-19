@@ -1,0 +1,45 @@
+================================================================================
+        OBJECTIVE 4: GAUSSIAN RBF-SVM HYPERPARAMETER TUNING REPORT
+================================================================================
+
+1. EXPERIMENTAL SETUP:
+   - Classifier:            Gaussian Support Vector Classifier (RBF Kernel)
+   - Kernel Equation:       K(x, x') = exp(-gamma * ||x - x'||^2)
+   - Preprocessing:         SimpleImputer(median) -> StandardScaler() embedded in Pipeline
+   - Class Balancing:       class_weight='balanced'
+   - Tuning Strategy:       GridSearchCV with 5-Fold Stratified Cross-Validation
+   - Optimization Scoring:  balanced_accuracy
+   - Training Cohort (N):   260 (Term: 219, Preterm: 41)
+   - Total Tuning Time:     5.26 seconds
+
+2. COMPARISON OF BASELINE (MODEL A) VS TUNED (MODEL B) IN 5-FOLD CV:
+--------------------------------------------------------------------------------
+Metric                       Model A (Default C=1, gamma='scale')   Model B (Tuned C=1000, gamma=0.0001)
+---------------------------- ------------------------------------ ------------------------------------
+Balanced Accuracy            0.5952 +/- 0.0600             0.5972 +/- 0.0539
+Overall Accuracy             0.7192 +/- 0.0510             0.7692 +/- 0.0902
+Preterm Sensitivity          0.4139 +/- 0.1228             0.3444 +/- 0.0999
+Term Specificity             0.7764 +/- 0.0644             0.8499 +/- 0.1181
+Preterm Precision            0.2638 +/- 0.0706             0.3840 +/- 0.1662
+Preterm F1-score             0.3169 +/- 0.0769             0.3283 +/- 0.0684
+ROC-AUC                      0.5940 +/- 0.0649             0.5821 +/- 0.0643
+
+3. TOP 10 HYPERPARAMETER COMBINATIONS (GRIDSEARCHCV):
+--------------------------------------------------------------------------------
+     C   gamma  CV_Bal_Acc_Mean  CV_Bal_Acc_Std  Rank
+1000.0  0.0001         0.597169        0.053915     1
+   1.0   scale         0.595158        0.060003     2
+ 100.0  0.0001         0.593760        0.053422     3
+   1.0     0.1         0.590918        0.094530     4
+   1.0    0.01         0.583533        0.064275     5
+  10.0   0.001         0.581260        0.061922     6
+1000.0     0.1         0.580691        0.033978     7
+ 100.0   0.001         0.577745        0.065419     8
+1000.0    0.01         0.574903        0.061782     9
+  10.0    0.01         0.573200        0.073166    10
+
+4. SELECTED CONFIGURATION FOR FINAL RETRAINING:
+   - Selected C:            1000
+   - Selected gamma:        0.0001
+   - Selected Kernel:       Gaussian Radial Basis Function (rbf)
+================================================================================

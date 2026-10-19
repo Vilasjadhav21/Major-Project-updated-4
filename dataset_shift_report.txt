@@ -1,0 +1,47 @@
+================================================================================
+          PHASE 6: DATASET SHIFT & COVARIATE DRIFT ANALYSIS
+================================================================================
+
+1. STATISTICAL DISTRIBUTION COMPARISON ACROSS DATASET RELEASES:
+--------------------------------------------------------------------------------
+Feature: sampen_imf1
+  v1.0.1: Mean=0.7810 (Std=0.1519)
+  v1.0.0: Mean=1.2333 (Std=0.1547)
+  Cohen's d: +2.9640 | KS p-val: 2.31e-21 | MWU p-val: 1.58e-16
+
+Feature: median_freq_imf1_hz
+  v1.0.1: Mean=2.7984 (Std=0.4678)
+  v1.0.0: Mean=3.1994 (Std=0.4577)
+  Cohen's d: +0.8560 | KS p-val: 2.09e-05 | MWU p-val: 4.94e-05
+
+Feature: rms_imf1
+  v1.0.1: Mean=0.0023 (Std=0.0012)
+  v1.0.0: Mean=0.0026 (Std=0.0013)
+  Cohen's d: +0.2784 | KS p-val: 9.03e-02 | MWU p-val: 2.71e-01
+
+Feature: rms_imf2
+  v1.0.1: Mean=0.0033 (Std=0.0022)
+  v1.0.0: Mean=0.0034 (Std=0.0020)
+  Cohen's d: +0.0376 | KS p-val: 6.71e-01 | MWU p-val: 7.21e-01
+
+Feature: hilbert_par_imf1
+  v1.0.1: Mean=9.8425 (Std=9.7097)
+  v1.0.0: Mean=10.4376 (Std=7.3395)
+  Cohen's d: +0.0622 | KS p-val: 2.96e-03 | MWU p-val: 6.83e-02
+
+2. DOMAIN DISCRIMINATION TEST:
+--------------------------------------------------------------------------------
+  Classifier: Logistic Regression (predicting dataset_version)
+  5-Fold CV Domain ROC-AUC: 0.9736 +/- 0.0317
+  Interpretation: AUC is notably above 0.50, demonstrating systematic covariate shift
+  primarily driven by sampen_imf1 and median_freq_imf1_hz due to the filter cutoff difference
+  (0.08–5.0 Hz in v1.0.0 vs 0.08–4.0 Hz in v1.0.1).
+
+3. METHODOLOGICAL SAFEGUARDS AGAINST COVARIATE DOMINANCE:
+--------------------------------------------------------------------------------
+  1. Stratified Splits: Ensure both training and test splits contain balanced
+     proportions of both dataset sources and Term/Preterm labels.
+  2. Standardized Scaling: Scaler fitted inside cross-validation folds.
+  3. Subgroup Evaluation: Evaluate test metrics on the full test set AND
+     report breakdown by dataset version.
+================================================================================

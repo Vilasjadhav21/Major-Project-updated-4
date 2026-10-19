@@ -1,0 +1,35 @@
+================================================================================
+       OBJECTIVE 4: MERGED FEATURE DATASET QUALITY & AUDIT REPORT
+================================================================================
+
+1. SOURCE ARTIFACT:
+   - File Path:             C:\Users\vilasjadhav\Major Project\Objective4_EHG_Rapid_Triage\outputs\features\combined_features.csv
+   - Total Feature Rows:    326
+   - Total Columns:         8
+   - Column List:           ['record_id', 'dataset_version', 'sampen_imf1', 'median_freq_imf1_hz', 'rms_imf1', 'rms_imf2', 'hilbert_par_imf1', 'label']
+   - Identifier Column:     record_id (composite namespaced)
+   - Source Column:         dataset_version ('v1.0.1' and 'v1.0.0')
+   - Target Label Column:   label (0 = Term, 1 = Preterm)
+
+2. COHORT PROVENANCE BREAKDOWN:
+   - TPEHGDB v1.0.1:        300 records (Term: 262, Preterm: 38)
+   - TPEHGT v1.0.0:         26 records (Term: 13, Preterm: 13)
+   - Total Combined:        326 records (Term: 275, Preterm: 51)
+   - Class Ratio:           5.39:1 (Term:Preterm)
+   - Non-pregnant Excluded: 5 records (tpehgt_n001 - tpehgt_n005 excluded; 0 present)
+
+3. INTEGRITY & VALIDATION AUDIT:
+   - Duplicate Record IDs:  0 (PASS)
+   - Duplicate Feature Rows:0 (PASS)
+   - Missing Values:        0 across all feature columns (PASS)
+   - Infinite Values:       0 across all feature columns (PASS)
+   - Non-Feature Filtering: Target label, record ID, and dataset source are strictly excluded from inputs.
+
+4. CANONICAL FEATURE SUMMARY STATISTICS (N=326):
+                     count      mean       std       min       25%       50%        75%        max
+sampen_imf1          326.0  0.817029  0.195656  0.266811  0.711362  0.811287   0.917119   1.505396
+median_freq_imf1_hz  326.0  2.830374  0.480193  0.716667  2.650015  2.833349   3.100013   4.033333
+rms_imf1             326.0  0.002328  0.001212  0.000284  0.001600  0.002102   0.002744   0.011519
+rms_imf2             326.0  0.003293  0.002230  0.000210  0.001831  0.002699   0.003973   0.015448
+hilbert_par_imf1     326.0  9.889988  9.558335  2.000857  4.101779  5.940328  12.434817  71.392636
+================================================================================

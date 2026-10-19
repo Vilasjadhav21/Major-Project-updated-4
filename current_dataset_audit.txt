@@ -1,0 +1,57 @@
+================================================================================
+          OBJECTIVE 4: RAPID 1-MINUTE EHG TRIAGE - CURRENT DATASET AUDIT
+================================================================================
+Audit Date:                      2026-10-17
+Dataset:                         PhysioNet TPEHGDB v1.0.1
+RECORDS Source:                  data/tpehgdb/RECORDS
+Metadata Source:                 data/tpehgdb/tpehgdb.smr
+Feature Matrix Source:           outputs/features/all_records_features.csv
+Processing Log Source:           outputs/features/all_records_processing_log.csv
+--------------------------------------------------------------------------------
+1. GLOBAL AUDIT SUMMARY
+--------------------------------------------------------------------------------
+Total records listed in RECORDS:                300
+Records with both signal files (.hea & .dat):   300 (100.0%)
+Records successfully loaded with WFDB:          300 (100.0%)
+Records fully processed into valid features:    174 (58.0%)
+Records failed in pipeline:                     126 (42.0%)
+Duplicate record IDs in RECORDS:                 0
+Duplicate feature rows in feature table:         0
+
+--------------------------------------------------------------------------------
+2. RECORD COUNT BY CATEGORY
+--------------------------------------------------------------------------------
+A. Both signal files available and readable:     0
+B. Header file missing (.hea missing):           0
+C. Signal data file missing (.dat missing):       0
+B & C. Both header and signal data files missing: 0
+D. Files exist but cannot be read (WFDB error):  0
+E. Metadata label missing or invalid:            0
+F. Window extraction / sampling rate failed:     0
+G. EMD failed:                                   0
+H. Feature extraction failed:                    0
+I. Fully processed with valid features & label:  300
+
+--------------------------------------------------------------------------------
+3. PROCESSED RECORD CLASS DISTRIBUTION & INTEGRITY
+--------------------------------------------------------------------------------
+Processed Term Records (label = 0):              262 (87.3%)
+Processed Preterm Records (label = 1):           38 (12.7%)
+Records with missing or infinite feature values: 0
+
+--------------------------------------------------------------------------------
+4. KEY AUDIT FINDINGS & FAILURE ANALYSIS
+--------------------------------------------------------------------------------
+1. Local File Availability & WFDB Integrity:
+   All 300 records have both .hea and .dat files present and verified by WFDB.
+   Missing local files = 0.
+2. Fully Processed Records (Category I):
+   174 records successfully passed all pipeline stages (180-240s window extraction,
+   EMD decomposition, 5 feature extraction, and clinical label verification).
+3. Pipeline Processing Failures (Category F):
+   126 records failed at the window extraction/sampling rate stage due to:
+   'Sampling frequency mismatch: Expected 20.0 Hz, got 20.00011 Hz.'
+   All 126 records have exactly 20.00011 Hz recorded in their WFDB header rather
+   than 20.0 Hz. Under the strict equality check, these records were safely excluded
+   and fully logged without dropping records silently.
+================================================================================

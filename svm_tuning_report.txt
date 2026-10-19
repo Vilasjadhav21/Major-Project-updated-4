@@ -1,0 +1,139 @@
+================================================================================
+          OBJECTIVE 4: EHG RAPID TRIAGE — SVM HYPERPARAMETER TUNING REPORT
+================================================================================
+Report Generated:       2026-10-17
+Dataset:                PhysioNet TPEHGDB v1.0.1 (All 300 Records Validated)
+Model Architecture:     scikit-learn Pipeline [StandardScaler -> SVC(kernel='rbf')]
+Target Channel:         S1 0.08–4 Hz (canonical: 1_DOCFILT-4-0.08-4)
+Triage Window:          180.0s to 240.0s (60.0s duration, 1200 samples at 20 Hz)
+Features (5):           sampen_imf1, median_freq_imf1_hz, rms_imf1, rms_imf2, hilbert_par_imf1
+Label Encoding:         Term = 0, Preterm = 1
+
+1. VERIFIED DATASET & STRATIFIED SPLIT SUMMARY
+--------------------------------------------------------------------------------
+Full Dataset Size:      300 records (262 Term, 38 Preterm)
+Training Cohort:        240 records (210 Term, 30 Preterm, 80.0%)
+Independent Test Set:   60 records (52 Term, 8 Preterm, 20.0%)
+Patient-Level Leakage:  0 overlapping records (PASS)
+Scaling Methodology:    StandardScaler fitted strictly within each training fold (PASS)
+
+2. STRATIFIED CROSS-VALIDATION CONFIGURATION
+--------------------------------------------------------------------------------
+Strategy:               StratifiedKFold
+Number of Folds:        5 (supported by minority-class count = 30 Preterm cases in train set)
+Shuffle:                True
+Random Seed:            42
+
+3. HYPERPARAMETER SEARCH SPACE & EVALUATION
+--------------------------------------------------------------------------------
+C Grid:                 [0.01, 0.1, 1.0, 10.0, 100.0, 1000.0]
+gamma Grid:             ['scale', 0.0001, 0.001, 0.01, 0.1, 1.0]
+Total Combinations:     36
+Total Cross-Val Fits:   180
+
+4. SELECTED BEST MODEL (Selected by Balanced Accuracy on Cross-Validation)
+--------------------------------------------------------------------------------
+Selected Best C:        0.1
+Selected Best gamma:    0.01
+Rationale:              Maximizes balanced accuracy (55.24%) and Preterm sensitivity (90.00%)
+                        on 5-fold CV while avoiding class-blindness on the 87.5/12.5 imbalanced cohort.
+
+5. CROSS-VALIDATION PERFORMANCE ACROSS 5 FOLDS (TUNED MODEL)
+--------------------------------------------------------------------------------
+Accuracy:               29.17% +/- 7.10%
+Balanced Accuracy:      55.24% +/- 5.66%
+Preterm Sensitivity:    90.00% +/- 8.16%
+Specificity (Term):     20.48% +/- 8.05%
+Preterm Precision:      14.01% +/- 1.60%
+Preterm F1-score:       0.2422 +/- 0.0260
+ROC-AUC:                0.4770 +/- 0.0314
+
+6. VARIABILITY ACROSS INDIVIDUAL 5 FOLDS (TUNED MODEL)
+--------------------------------------------------------------------------------
+  Fold 1: Acc=18.75%, BalAcc=46.43%, Sens=83.33%, Spec=9.52%, ROC-AUC=0.5278
+  Fold 2: Acc=37.50%, BalAcc=64.29%, Sens=100.00%, Spec=28.57%, ROC-AUC=0.4524
+  Fold 3: Acc=33.33%, BalAcc=54.76%, Sens=83.33%, Spec=26.19%, ROC-AUC=0.4841
+  Fold 4: Acc=22.92%, BalAcc=55.95%, Sens=100.00%, Spec=11.90%, ROC-AUC=0.4365
+  Fold 5: Acc=33.33%, BalAcc=54.76%, Sens=83.33%, Spec=26.19%, ROC-AUC=0.4841
+
+7. BASELINE MODEL PERFORMANCE (C=1.0, gamma='scale')
+--------------------------------------------------------------------------------
+Baseline Accuracy:          55.83% +/- 12.67%
+Baseline Balanced Accuracy: 53.33% +/- 10.00%
+Baseline Sensitivity:       50.00% +/- 36.51%
+Baseline Specificity:       56.67% +/- 19.19%
+Baseline Precision:         11.70% +/- 6.57%
+Baseline F1-Score:          0.1850 +/- 0.1115
+Baseline ROC-AUC:           0.4111 +/- 0.0633
+
+8. TUNED VS BASELINE COMPARISON ON SAME CROSS-VALIDATION FOLDS
+--------------------------------------------------------------------------------
+Balanced Accuracy Delta:    +0.0190 (+1.90%)
+Preterm Sensitivity Delta:  +0.4000 (+40.00%)
+Specificity (Term) Delta:   -0.3619 (-36.19%)
+F1-Score Delta:             +0.0572
+ROC-AUC Delta:              +0.0659
+
+9. DECISION THRESHOLD & PROBABILITY ESTIMATES ANALYSIS (TRAINING FOLDS)
+--------------------------------------------------------------------------------
+Findings:
+  - The SVM decision boundary (predict()) operates directly on decision_function > 0,
+    which natively applies class_weight='balanced'.
+  - Platt probability calibration (predict_proba) estimates empirical posterior frequencies
+    clustered around the training set prior prevalence (~12.5%).
+  - Operating on decision_function > 0 achieves 90.00% Preterm sensitivity and 55.24% balanced accuracy.
+  - Scanning probability thresholds T on training folds shows:
+Threshold    Accuracy     BalAcc       Sensitivity    Specificity    F1-Score  
+0.080        12.50        50.00        100.00         0.00           0.2222    
+0.100        12.50        50.00        100.00         0.00           0.2222    
+0.120        79.17        48.10        6.67           89.52          0.0741    
+0.125        85.42        48.81        0.00           97.62          0.0000    
+0.140        87.50        50.00        0.00           100.00         0.0000    
+0.160        87.50        50.00        0.00           100.00         0.0000    
+0.180        87.50        50.00        0.00           100.00         0.0000    
+0.200        87.50        50.00        0.00           100.00         0.0000    
+0.300        87.50        50.00        0.00           100.00         0.0000    
+0.500        87.50        50.00        0.00           100.00         0.0000    
+
+10. COMPLETE HYPERPARAMETER GRID RANKING (36 CONFIGURATIONS)
+--------------------------------------------------------------------------------
+C        gamma    Mean Acc     Mean BalAcc    Mean Sens    Mean Spec    Mean F1    Mean ROC-AUC   Std AUC
+0.1      0.01     0.2917       0.5524         0.9000       0.2048       0.2422     0.4770         0.0314
+0.1      0.001    0.2208       0.5405         0.9667       0.1143       0.2374     0.4651         0.0368
+0.1      0.0001   0.2125       0.5357         0.9667       0.1048       0.2356     0.4659         0.0379
+10.0     0.0001   0.2125       0.5357         0.9667       0.1048       0.2356     0.4659         0.0379
+1.0      scale    0.5583       0.5333         0.5000       0.5667       0.1850     0.4111         0.0633
+10.0     0.1      0.6000       0.5286         0.4333       0.6238       0.1736     0.4143         0.0643
+1000.0   0.01     0.6208       0.5262         0.4000       0.6524       0.1707     0.4889         0.1005
+100.0    0.001    0.4958       0.5262         0.5667       0.4857       0.2169     0.5421         0.0385
+100.0    0.01     0.5208       0.5262         0.5333       0.5190       0.1951     0.4627         0.0966
+1000.0   0.0001   0.4917       0.5238         0.5667       0.4810       0.2154     0.5024         0.0469
+1.0      0.1      0.5125       0.5214         0.5333       0.5095       0.1828     0.4286         0.0766
+0.1      scale    0.4833       0.5190         0.5667       0.4714       0.1929     0.5087         0.0847
+10.0     scale    0.6500       0.5143         0.3333       0.6952       0.1764     0.5302         0.1014
+10.0     0.01     0.4792       0.5024         0.5333       0.4714       0.1989     0.5468         0.0378
+0.01     1.0      0.8750       0.5000         0.0000       1.0000       0.0000     0.5437         0.1371
+0.01     scale    0.8750       0.5000         0.0000       1.0000       0.0000     0.5087         0.0847
+0.01     0.1      0.8750       0.5000         0.0000       1.0000       0.0000     0.4825         0.0533
+0.01     0.01     0.8750       0.5000         0.0000       1.0000       0.0000     0.4770         0.0314
+0.01     0.0001   0.8750       0.5000         0.0000       1.0000       0.0000     0.4659         0.0379
+1.0      0.0001   0.1250       0.5000         1.0000       0.0000       0.2222     0.4659         0.0379
+0.01     0.001    0.8750       0.5000         0.0000       1.0000       0.0000     0.4651         0.0368
+1.0      0.001    0.1250       0.5000         1.0000       0.0000       0.2222     0.4651         0.0368
+0.1      1.0      0.7625       0.4929         0.1333       0.8524       0.1230     0.5437         0.1371
+1.0      1.0      0.7375       0.4929         0.1667       0.8190       0.1433     0.5079         0.1178
+10.0     0.001    0.4625       0.4929         0.5333       0.4524       0.1929     0.4968         0.0425
+100.0    0.0001   0.4583       0.4905         0.5333       0.4476       0.1916     0.4968         0.0425
+1000.0   0.001    0.4875       0.4786         0.4667       0.4905       0.1770     0.5571         0.0372
+1000.0   1.0      0.7833       0.4762         0.0667       0.8857       0.0764     0.5429         0.1870
+100.0    0.1      0.6333       0.4762         0.2667       0.6857       0.1415     0.5230         0.0710
+1.0      0.01     0.4583       0.4762         0.5000       0.4524       0.1724     0.5008         0.0454
+1000.0   0.1      0.7042       0.4738         0.1667       0.7810       0.1038     0.5000         0.0614
+10.0     1.0      0.7750       0.4714         0.0667       0.8762       0.0764     0.5198         0.1520
+0.1      0.1      0.4250       0.4714         0.5333       0.4095       0.1694     0.4825         0.0533
+1000.0   scale    0.7458       0.4690         0.1000       0.8381       0.0786     0.4913         0.0815
+100.0    1.0      0.7667       0.4667         0.0667       0.8667       0.0764     0.5460         0.2094
+100.0    scale    0.6750       0.4571         0.1667       0.7476       0.1011     0.4810         0.0657
+================================================================================
+END OF SVM TUNING REPORT
+================================================================================

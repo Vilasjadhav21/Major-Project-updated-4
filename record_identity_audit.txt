@@ -1,0 +1,51 @@
+================================================================================
+          OBJECTIVE 4: RECORD IDENTITY & DATA LEAKAGE AUDIT REPORT
+================================================================================
+Audit Date:         2026-10-19
+Datasets Analyzed:  PhysioNet TPEHGDB v1.0.1 (N=300) & PhysioNet TPEHGT v1.0.0 (N=31)
+Composite Prefix:   tpehgdb_v1.0.1:<record_id> and tpehgt_v1.0.0:<record_id>
+
+--------------------------------------------------------------------------------
+1. RECORD IDENTIFIER UNIQUENESS WITHIN DATASETS:
+--------------------------------------------------------------------------------
+- TPEHGDB v1.0.1:
+  * Total records in RECORDS: 300
+  * Unique record IDs: 300 (100.0% unique)
+  * Duplicate record IDs within dataset: 0
+
+- TPEHGT v1.0.0:
+  * Total records in RECORDS: 31
+  * Unique record IDs: 31 (100.0% unique)
+  * Duplicate record IDs within dataset: 0
+
+--------------------------------------------------------------------------------
+2. CROSS-DATASET COMPOSITE NAMESPACING & COLLISION CHECK:
+--------------------------------------------------------------------------------
+- Unique composite ID formatting:
+  * v1.0.1 format: tpehgdb_v1.0.1:tpehgXXXX (e.g. tpehgdb_v1.0.1:tpehg1007)
+  * v1.0.0 format: tpehgt_v1.0.0:tpehgt_XNNN (e.g. tpehgt_v1.0.0:tpehgt_t001)
+- Inter-dataset namespace collisions: 0 (prefixes and stems are distinct).
+
+--------------------------------------------------------------------------------
+3. PATIENT-LEVEL OVERLAP & LEAKAGE INVESTIGATION:
+--------------------------------------------------------------------------------
+- Multi-attribute clinical fingerprinting:
+  Attributes tested: (Gestation, Rectime, Age, Parity, Weight, Placental Position, Smoking status)
+  * Multi-attribute identical matches between v1.0.0 and v1.0.1: 0
+- Raw signal statistical fingerprinting (First 5,000 samples of abdominal bipolar 1):
+  * Exact or near-identical signal matches (tolerance 1e-6): 0
+- Cross-dataset Patient Identity Limitation:
+  Neither PhysioNet v1.0.1 nor v1.0.0 provides unmasked patient hospital MRNs.
+  The empirical findings (zero identical clinical profiles and zero duplicated signals)
+  confirm that no identical duplicate recording exists across the two cohorts.
+
+--------------------------------------------------------------------------------
+4. DATA LEAKAGE MITIGATION DIRECTIVES:
+--------------------------------------------------------------------------------
+- Record-level isolation: All training/test splits must be strictly stratified on
+  composite record identifiers.
+- Preprocessing isolation: StandardScaler and resampling (if any) must be fitted
+  strictly inside cross-validation training folds and the training split.
+- Zero test contamination: The test set must remain unscaled, un-oversampled, and
+  untouched during model selection and hyperparameter optimization.
+================================================================================

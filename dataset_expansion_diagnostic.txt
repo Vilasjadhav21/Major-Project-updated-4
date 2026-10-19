@@ -1,0 +1,190 @@
+================================================================================
+          OBJECTIVE 4: RAPID 1-MINUTE EHG TRIAGE — DATASET EXPANSION DIAGNOSTIC
+================================================================================
+Report Generated: 2026-10-17
+Project Path:     c:/Users/vilasjadhav/Major Project/Objective4_EHG_Rapid_Triage
+Diagnostic Scope: Data inventory, batch pipeline verification, integrity audit,
+                  and roadmap for expanding training/testing dataset cohorts.
+
+--------------------------------------------------------------------------------
+EXECUTIVE SUMMARY
+--------------------------------------------------------------------------------
+The Objective 4 model currently exhibits 66.67% accuracy, 50.00% balanced accuracy,
+0.00% sensitivity for Preterm detection, and 100.00% Term specificity. This
+behavior is directly caused by extreme sample scarcity and severe class imbalance
+in the current local dataset partition (12 training records: 10 Term, 2 Preterm;
+and 3 testing records: 2 Term, 1 Preterm).
+
+The root cause is NOT a software defect in the processing pipeline, but rather that
+the local filesystem holds complete WFDB binary signal files (.dat + .hea) for
+only 15 records out of the 300 records documented in PhysioNet TPEHGDB v1.0.1.
+The existing batch-processing pipeline (src/process_all_records.py) is already
+fully implemented, robust, and capable of processing all 300 records once their
+signal files are downloaded.
+
+--------------------------------------------------------------------------------
+SYSTEMATIC INVESTIGATION FINDINGS (QUESTIONS A THROUGH J)
+--------------------------------------------------------------------------------
+
+A. HOW MANY ORIGINAL RECORDS ARE AVAILABLE LOCALLY?
+---------------------------------------------------
+- Files present in data/tpehgdb/tpehgdb/:
+    * 17 header (.hea) files
+    * 16 binary signal (.dat) files
+- Record stems with at least one file present: 18 unique records
+    (tpehg1007, tpehg1021, tpehg1022, tpehg1027, tpehg1029, tpehg1031, tpehg1039,
+     tpehg1065, tpehg1070, tpehg1177, tpehg1183, tpehg1188, tpehg1192, tpehg1197,
+     tpehg1201, tpehg1202, tpehg1203, tpehg1205).
+- Completeness Breakdown:
+    * Records with BOTH .hea and .dat: EXACTLY 15 RECORDS.
+      [tpehg1007, tpehg1021, tpehg1022, tpehg1027, tpehg1029, tpehg1031, tpehg1039,
+       tpehg1065, tpehg1183, tpehg1188, tpehg1192, tpehg1197, tpehg1201, tpehg1202,
+       tpehg1203]
+    * Records with .hea only (missing .dat): 2 records (tpehg1070, tpehg1205).
+    * Records with .dat only (missing .hea): 1 record (tpehg1177).
+- Conclusion: Exactly 15 fully loadable WFDB signal records are available locally.
+
+
+B. HOW MANY RECORDS ARE LISTED IN RECORDS?
+------------------------------------------
+- File: data/tpehgdb/RECORDS
+- Total entries listed: EXACTLY 300 RECORDS.
+- Entries range from 'tpehgdb/tpehg1007' to 'tpehgdb/tpehg994'.
+- This matches the complete official cohort size of PhysioNet TPEHGDB v1.0.1.
+
+
+C. HOW MANY RECORDS HAVE VALID SIGNAL FILES AND METADATA LABELS?
+---------------------------------------------------------------
+1. Metadata availability:
+   - data/tpehgdb/tpehgdb.smr and outputs/features/tpehgdb_metadata.csv contain
+     complete clinical annotations (Gestation, Premature, Early, Group, target, label)
+     for ALL 300 RECORDS.
+2. Signal file availability:
+   - Only 15 records have valid paired signal files (.hea and .dat) that can be
+     loaded by the WFDB library.
+3. Intersection:
+   - Exactly 15 records have BOTH valid, loadable signal files AND valid clinical
+     metadata labels in the local environment.
+   - All 15 loadable records (100%) successfully passed WFDB signal parsing,
+     sampling frequency verification (20 Hz), and 60-second window extraction (1200 samples).
+
+
+D. HOW MANY TERM AND PRETERM RECORDS ARE AVAILABLE?
+---------------------------------------------------
+1. In the full 300-record cohort (tpehgdb.smr / tpehgdb_metadata.csv):
+   - Term records (Premature = 'f', target = 0):    262 (87.33%)
+   - Preterm records (Premature = 't', target = 1):  38 (12.67%)
+   - Total records in metadata:                     300 (100.0%)
+
+2. In the locally available 15 complete records:
+   - Term records (label = 0): 12 records (80.0%)
+     [tpehg1021, tpehg1022, tpehg1027, tpehg1029, tpehg1031, tpehg1039,
+      tpehg1065, tpehg1183, tpehg1188, tpehg1192, tpehg1197, tpehg1201]
+   - Preterm records (label = 1): 3 records (20.0%)
+     [tpehg1007, tpehg1202, tpehg1203]
+
+
+E. WHY WERE ONLY 12 TRAINING RECORDS CREATED?
+---------------------------------------------
+- When the batch extraction pipeline (src/process_all_records.py) ran over the
+  300 records in data/tpehgdb/RECORDS, only the 15 complete local records could be
+  processed. The remaining 285 records failed with file missing errors.
+- The 15 successfully extracted feature vectors were saved to:
+  outputs/features/all_records_features.csv (15 rows x 7 columns).
+- A standard 80% / 20% stratified train/test split was applied to all_records_features.csv:
+    * 80% Training set = round(15 * 0.80) = 12 records (10 Term, 2 Preterm).
+    * 20% Test set     = round(15 * 0.20) =  3 records (2 Term, 1 Preterm).
+- Therefore, exactly 12 training records were created because the source feature pool
+  contained only 15 successfully extracted records due to missing local raw signal files.
+
+
+F. WHETHER THE EXISTING BATCH-PROCESSING PIPELINE CAN PROCESS ALL AVAILABLE RECORDS
+-----------------------------------------------------------------------------------
+- YES. src/process_all_records.py is completely functional and designed for full-scale
+  batch execution:
+    1. It reads all 300 entries from data/tpehgdb/RECORDS.
+    2. It maps channel aliases to "1_DOCFILT-4-0.08-4" (S1 0.08–4 Hz).
+    3. It extracts the 60-second triage window (180s to 240s = 1200 samples at 20 Hz).
+    4. It decomposes the signal using EMD into IMFs.
+    5. It computes the 5 validated features:
+       sampen_imf1, median_freq_imf1_hz, rms_imf1, rms_imf2, hilbert_par_imf1.
+    6. It validates that all features are non-NaN and finite.
+    7. It automatically pairs features with metadata labels (Term=0, Preterm=1).
+- No algorithmic or architectural changes to the pipeline are required to process
+  additional records; it will automatically extract and log them as soon as their
+  .hea and .dat files exist locally.
+
+
+G. WHETHER FAILED RECORDS ARE LOGGED PROPERLY
+---------------------------------------------
+- YES. src/process_all_records.py wraps every record attempt in a comprehensive
+  try/except block and logs detailed audit data to:
+  outputs/features/all_records_processing_log.csv (300 rows).
+- For each record, the log captures:
+    * record: Stem name (e.g., tpehg1070, tpehg553)
+    * status: 'SUCCESS' or 'FAILED'
+    * reason: Exact failure cause (e.g., "[Errno 2] No such file or directory... .dat"
+              or "Record ... (.hea header file) not found in local directory")
+    * label: Clinical target label if parsed from metadata
+    * sampling_frequency, window_samples, imf_count
+- Out of 300 records logged:
+    * 15 marked SUCCESS (15 complete local records)
+    * 285 marked FAILED (1 missing .dat for tpehg1070; 284 missing .hea/.dat)
+
+
+H. WHETHER THE FEATURE DATASET CONTAINS ONE ROW PER PREGNANCY RECORD
+--------------------------------------------------------------------
+- YES.
+  - outputs/features/all_records_features.csv has 15 rows for 15 unique records (nunique = 15).
+  - outputs/features/train_dataset.csv has 12 rows for 12 unique records (nunique = 12).
+  - outputs/features/test_dataset.csv has 3 rows for 3 unique records (nunique = 3).
+  - outputs/features/validation_10_records.csv has 8 rows for 8 unique records (nunique = 8).
+- Each row represents a single pregnancy subject (patient-level record), avoiding
+  pseudo-replication or segment-level data leakage.
+
+
+I. WHETHER DUPLICATE RECORDS OR OVERLAPPING TRAIN/TEST RECORD IDS EXIST
+----------------------------------------------------------------------
+- Duplicates: ZERO duplicate record IDs exist within any feature file.
+- Split Disjointness: ZERO overlap between training and testing splits:
+    set(train_dataset['record']) INTERSECT set(test_dataset['record']) = EMPTY SET.
+- Integrity verification:
+    * Training records (12): tpehg1007, tpehg1021, tpehg1022, tpehg1027, tpehg1031,
+                            tpehg1039, tpehg1183, tpehg1188, tpehg1192, tpehg1197,
+                            tpehg1201, tpehg1202
+    * Test records (3):     tpehg1029, tpehg1065, tpehg1203
+    * Overlap: 0 (PASS - strictly disjoint partition)
+
+
+J. MINIMUM CHANGES REQUIRED TO CREATE A LARGER, VALID FEATURE DATASET
+---------------------------------------------------------------------
+To resolve the low sensitivity (0%) and small-sample limitation without fabricating
+data or modifying scientific parameters:
+
+1. Step 1 — Local Signal Download / Synchronization:
+   - Download the missing WFDB files (.hea and .dat) for the remaining 285 records
+     from PhysioNet TPEHGDB v1.0.1 (https://physionet.org/content/tpehgdb/1.0.1/)
+     into data/tpehgdb/tpehgdb/ (including the missing tpehg1070.dat).
+   - This can be executed via wfdb.dl_database('tpehgdb', dl_dir) or curl/wget scripts.
+
+2. Step 2 — Run Existing Batch Processing:
+   - Execute: python src/process_all_records.py
+   - No code edits are required. The script will process all available records,
+     yielding an expanded outputs/features/all_records_features.csv with up to
+     300 records (262 Term, 38 Preterm).
+
+3. Step 3 — Generate Expanded Stratified Train/Test Splits:
+   - Split the full 300-record feature matrix using 80/20 stratified sampling:
+     * Training Set: ~240 records (~210 Term, ~30 Preterm)
+     * Test Set:     ~60 records (~52 Term, ~8 Preterm)
+   - Save to outputs/features/train_dataset.csv and outputs/features/test_dataset.csv.
+
+4. Step 4 — Retrain and Evaluate:
+   - Fit StandardScaler strictly on the expanded training set (240 records).
+   - Train the SVM classifier with balanced class weights on the 240 records.
+   - Evaluate performance on the independent 60-record holdout test set to obtain
+     statistically meaningful Sensitivity, Specificity, and ROC-AUC.
+
+--------------------------------------------------------------------------------
+END OF DIAGNOSTIC REPORT
+================================================================================

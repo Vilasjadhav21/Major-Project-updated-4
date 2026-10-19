@@ -1,0 +1,35 @@
+================================================================================
+        OBJECTIVE 4 — FEATURE SCALING & DATA LEAKAGE REPORT        
+================================================================================
+1. SCALER CONFIGURATION:
+   - Scaler Type: sklearn.preprocessing.StandardScaler
+   - Saved Scaler Artifact: outputs/models/standard_scaler.joblib
+   - Scaled Datasets: outputs/features/train_scaled.csv, test_scaled.csv
+   - Preserved Columns: record (string ID), label (target integer: 0=Term, 1=Preterm)
+   - Features Scaled (5): sampen_imf1, median_freq_imf1_hz, rms_imf1, rms_imf2, hilbert_par_imf1
+--------------------------------------------------------------------------------
+2. FEATURE MEANS & STANDARD DEVIATIONS BEFORE SCALING (TRAINING SET):
+Feature Name            | Raw Mean         | Raw Std Dev (ddof=0)
+-----------------------------------------------------------------
+sampen_imf1             | 0.798206         | 0.173659            
+median_freq_imf1_hz     | 2.600000         | 0.626424            
+rms_imf1                | 2.344634e-03     | 1.026652e-03        
+rms_imf2                | 4.401004e-03     | 3.722662e-03        
+hilbert_par_imf1        | 12.352007        | 11.003518           
+--------------------------------------------------------------------------------
+3. TRAINING FEATURE MEANS & STANDARD DEVIATIONS AFTER SCALING:
+Feature Name            | Scaled Mean      | Scaled Std Dev      
+-----------------------------------------------------------------
+sampen_imf1             | 5.412337e-16     | 1.000000            
+median_freq_imf1_hz     | -1.017704e-16    | 1.000000            
+rms_imf1                | -1.665335e-16    | 1.000000            
+rms_imf2                | -1.110223e-16    | 1.000000            
+hilbert_par_imf1        | -1.202742e-16    | 1.000000            
+--------------------------------------------------------------------------------
+4. DATA-LEAKAGE PREVENTION VERIFICATION:
+   - Fitted on Training Data ONLY: PASS
+   - Max difference between scaler mean and train mean: 0.00e+00
+   - Scaler mean vector matches training set feature means exactly.
+   - Test set features transformed using training-derived scaler parameters.
+   - Zero information leakage from testing set into feature normalization.
+================================================================================

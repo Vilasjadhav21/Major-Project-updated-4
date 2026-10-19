@@ -1,0 +1,53 @@
+================================================================================
+       OBJECTIVE 4 — EXPLORATORY FEATURE ANALYSIS REPORT       
+================================================================================
+1. METHODOLOGICAL CONTEXT:
+   - Dataset analyzed: TPEHGDB v1.0.1 validation dataset
+   - Total analyzed records: 15 (12 Term, 3 Preterm)
+   - Signal window: 1-minute (180–240s) from S1 0.08–4 Hz
+   - Decomposition: Empirical Mode Decomposition (EMD) -> IMF-1 & IMF-2
+   - Features (5): SampEn IMF-1, Median Freq IMF-1, RMS IMF-1, RMS IMF-2, Hilbert PAR IMF-1
+--------------------------------------------------------------------------------
+2. CLASS-STRATIFIED DESCRIPTIVE STATISTICS (TERM vs PRETERM):
+Feature              | Group    | Count | Mean         | Median       | Std Dev      | Min          | Max         
+---------------------------------------------------------------------------------------------------------
+sampen_imf1          | Term     | 12    | 0.7826       | 0.8231       | 0.1714       | 0.4277       | 1.0125      
+sampen_imf1          | Preterm  | 3     | 0.8588       | 0.8202       | 0.1186       | 0.7642       | 0.9919      
+median_freq_imf1_hz  | Term     | 12    | 2.6597       | 2.7917       | 0.6890       | 1.2667       | 3.8333      
+median_freq_imf1_hz  | Preterm  | 3     | 2.5944       | 2.7667       | 0.3276       | 2.2167       | 2.8000      
+rms_imf1             | Term     | 12    | 2.1675e-03   | 2.0779e-03   | 1.0141e-03   | 9.6278e-04   | 4.4280e-03  
+rms_imf1             | Preterm  | 3     | 2.6095e-03   | 1.9274e-03   | 1.2797e-03   | 1.8152e-03   | 4.0857e-03  
+rms_imf2             | Term     | 12    | 3.4231e-03   | 3.0120e-03   | 1.8063e-03   | 1.4857e-03   | 7.4022e-03  
+rms_imf2             | Preterm  | 3     | 6.3146e-03   | 2.1561e-03   | 7.9207e-03   | 1.3392e-03   | 1.5448e-02  
+hilbert_par_imf1     | Term     | 12    | 11.9056      | 7.8632       | 11.0745      | 2.9129       | 38.3522     
+hilbert_par_imf1     | Preterm  | 3     | 10.2486      | 3.4605       | 12.1178      | 3.0464       | 24.2390     
+--------------------------------------------------------------------------------
+3. PAIRWISE FEATURE CORRELATIONS (PEARSON COEFFICIENTS):
+   - sampen_imf1 vs median_freq_imf1_hz: r = 0.2143
+   - sampen_imf1 vs rms_imf1: r = -0.4170
+   - sampen_imf1 vs rms_imf2: r = 0.0392
+   - sampen_imf1 vs hilbert_par_imf1: r = -0.8054
+   - median_freq_imf1_hz vs rms_imf1: r = -0.2675
+   - median_freq_imf1_hz vs rms_imf2: r = -0.1686
+   - median_freq_imf1_hz vs hilbert_par_imf1: r = -0.3569
+   - rms_imf1 vs rms_imf2: r = 0.6126
+   - rms_imf1 vs hilbert_par_imf1: r = 0.5283
+   - rms_imf2 vs hilbert_par_imf1: r = 0.2873
+--------------------------------------------------------------------------------
+4. SCIENTIFIC & METHODOLOGICAL OBSERVATIONS:
+   [A] Descriptive Differences:
+       - Sample Entropy (IMF-1): Term mean = 0.7826, Preterm mean = 0.8588
+       - Median Frequency (IMF-1): Term mean = 2.6597 Hz, Preterm mean = 2.5944 Hz
+   [B] Feature Multicollinearity:
+       - Strongest positive correlation observed between RMS IMF-1 and RMS IMF-2 (r = 0.6126).
+--------------------------------------------------------------------------------
+5. CRITICAL SCIENTIFIC DISCLAIMER (DESCRIPTIVE vs PREDICTIVE):
+   - STRICT BOUNDARY NOTICE: Descriptive statistical differences (e.g. mean or median variations)
+     between Term and Preterm groups DO NOT establish or imply predictive capability.
+   - SAMPLE SIZE LIMITATION: The current dataset contains only 15 successfully processed local records
+     (12 Term, 3 Preterm). High class imbalance and small sample size introduce sample variance.
+   - NO MODEL INFERENCE: Machine learning models (e.g. SVM), cross-validated feature ranking,
+     or hypothesis testing were not applied in this exploratory analysis phase.
+   - CONCLUSION: Features describe empirical distributions across available samples only. Predictive
+     efficacy can only be asserted following model training, cross-validation, and ROC-AUC evaluation.
+================================================================================

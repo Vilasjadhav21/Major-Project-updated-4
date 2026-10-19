@@ -1,0 +1,3 @@
+record,listed_in_RECORDS,hea_exists,dat_exists,wfdb_path,physionet_available,diagnosis,recommended_action
+tpehg1070,True,True,False,data/tpehgdb/tpehgdb/tpehg1070,True,A. Local download/file problem,Download missing tpehg1070.dat file from PhysioNet into data/tpehgdb/tpehgdb/
+tpehg1088,True,False,False,data/tpehgdb/tpehgdb/tpehg1088,True,A. Local download/file problem,Download missing tpehg1088.hea and tpehg1088.dat files from PhysioNet into data/tpehgdb/tpehgdb/

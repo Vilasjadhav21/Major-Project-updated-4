@@ -1,0 +1,50 @@
+================================================================================
+        COMBINED EHG FEATURE DATASET CLEANING & INTEGRITY REPORT
+================================================================================
+
+1. DATASET COMPOSITION:
+--------------------------------------------------------------------------------
+  TPEHGDB v1.0.1 Records:      300 (Term: 262, Preterm: 38)
+  TPEHGT v1.0.0 Records:        26 (Term: 13, Preterm: 13)
+  Total Valid Features:         326
+  Combined Term (0):            275
+  Combined Preterm (1):         51
+  Imbalance Ratio (Term:Preterm): 5.39:1
+
+2. DATA INTEGRITY AUDIT CHECKS:
+--------------------------------------------------------------------------------
+  Check 1 [Invalid Labels]:     0 invalid rows detected.
+  Check 2 [Missing Features]:   0 missing values.
+  Check 3 [Infinite Features]:  0 infinite values.
+  Check 4 [Duplicate IDs]:      0 duplicate identifiers found.
+  Check 5 [Duplicate Rows]:     0 duplicate feature rows found.
+  Check 6 [Constant Features]:  0 constant features (min variance: 1.47e-06).
+  Check 7 [Extreme Extraction]: All features within plausible electrophysiological bounds.
+  Check 8 [Physical Validity]:
+    - SampEn in [0, 10]:        0 invalid
+    - MedFreq in (0, 10] Hz:    0 invalid
+    - RMS IMF1 > 0:             0 invalid
+    - RMS IMF2 > 0:             0 invalid
+    - Hilbert PAR >= 1.0:       0 invalid
+  Check 9 [Label Mappings]:     Verified against clinical ground truth in tpehgdb.smr and .hea headers.
+  Check 10 [Exclusion Log]:     5 non-pregnant control records excluded; 0 pregnancy records failed.
+
+3. FEATURE DISTRIBUTION SUMMARY (COMBINED COHORT, N=326):
+--------------------------------------------------------------------------------
+                     count      mean       std       min       25%       50%        75%        max
+sampen_imf1          326.0  0.817029  0.195656  0.266811  0.711362  0.811287   0.917119   1.505396
+median_freq_imf1_hz  326.0  2.830374  0.480193  0.716667  2.650015  2.833349   3.100013   4.033333
+rms_imf1             326.0  0.002328  0.001212  0.000284  0.001600  0.002102   0.002744   0.011519
+rms_imf2             326.0  0.003293  0.002230  0.000210  0.001831  0.002699   0.003973   0.015448
+hilbert_par_imf1     326.0  9.889988  9.558335  2.000857  4.101779  5.940328  12.434817  71.392636
+
+4. SUBGROUP COMPARISON BY DATASET SOURCE:
+--------------------------------------------------------------------------------
+Feature Means by (Dataset, Label):
+                       sampen_imf1  median_freq_imf1_hz  rms_imf1  rms_imf2  hilbert_par_imf1
+dataset_version label                                                                        
+v1.0.0          0         1.181290             3.275641  0.002976  0.003955          9.984075
+                1         1.285282             3.123077  0.002300  0.002786         10.891153
+v1.0.1          0         0.778910             2.792945  0.002349  0.003324          9.871819
+                1         0.795039             2.835974  0.001974  0.003029          9.640569
+================================================================================

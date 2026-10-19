@@ -1,0 +1,73 @@
+================================================================================
+      OBJECTIVE 4: GAUSSIAN RBF-SVM INDEPENDENT EVALUATION REPORT
+================================================================================
+
+1. MODEL ARCHITECTURE & HYPERPARAMETERS:
+   - Model Type:            Gaussian Radial Basis Function SVM (SVC)
+   - Kernel Formula:        K(x, x') = exp(-gamma * ||x - x'||^2)
+   - Preprocessing Pipeline:SimpleImputer(strategy='median') -> StandardScaler()
+   - Optimal C:             1000
+   - Optimal gamma:         0.0001
+   - Class Weight:          balanced
+   - Training Time:         0.0140 seconds
+   - Prediction Time:       0.000998 seconds (0.015 ms/sample)
+   - Model Checkpoint:      C:\Users\vilasjadhav\Major Project\Objective4_EHG_Rapid_Triage\outputs\models\gaussian_rbf_svm.joblib
+
+2. INDEPENDENT HOLDOUT TEST METRICS (N=66):
+--------------------------------------------------------------------------------
+   - Test Sample Count (N): 66 (Term: 56, Preterm: 10)
+   - Overall Accuracy:      77.27% (0.7727)
+   - Balanced Accuracy:     57.86% (0.5786)
+   - Preterm Sensitivity:   30.00% (0.3000) [3/10 Preterm detected]
+   - Term Specificity:      85.71% (0.8571) [48/56 Term detected]
+   - Preterm Precision:     27.27% (0.2727)
+   - F1-Score:              0.2857
+   - ROC-AUC:               0.5589
+
+3. CONFUSION MATRIX (TEST COHORT):
+--------------------------------------------------------------------------------
+                   Predicted Term (0)    Predicted Preterm (1)
+True Term (0):     48                     8
+True Preterm (1):  7                      3
+
+   - True Positives (TP):   3
+   - False Positives (FP):  8
+   - True Negatives (TN):   48
+   - False Negatives (FN):  7
+
+4. CLASSIFICATION REPORT:
+--------------------------------------------------------------------------------
+              precision    recall  f1-score   support
+
+    Term (0)       0.87      0.86      0.86        56
+ Preterm (1)       0.27      0.30      0.29        10
+
+    accuracy                           0.77        66
+   macro avg       0.57      0.58      0.58        66
+weighted avg       0.78      0.77      0.78        66
+
+
+5. PERFORMANCE BREAKDOWN BY DATASET SOURCE:
+--------------------------------------------------------------------------------
+A. TPEHGDB v1.0.1 Subcohort (N=61, Term: 53, Preterm: 8):
+   - Accuracy:              80.33%
+   - Balanced Accuracy:     51.53%
+   - Preterm Sensitivity:   12.50% (1/8)
+   - Term Specificity:      90.57% (48/53)
+
+B. TPEHGT v1.0.0 Subcohort (N=5, Term: 3, Preterm: 2):
+   - Accuracy:              40.00%
+   - Balanced Accuracy:     50.00%
+   - Preterm Sensitivity:   100.00% (2/2)
+   - Term Specificity:      0.00% (0/3)
+
+6. METRIC STABILITY & CLINICAL CONSIDERATIONS:
+--------------------------------------------------------------------------------
+   - Small Minority Class Impact: With 10 Preterm samples in the holdout test set,
+     each individual Preterm case accounts for exactly 10.0% of the sensitivity metric.
+     Consequently, test sensitivity is inherently subject to higher variance than specificity.
+   - Internal CV Stability: The 5-fold cross-validation results on the training set (N=260)
+     exhibit a balanced accuracy of 59.52% +/- 6.00%, confirming stable cross-validated learning.
+   - Clinical Disclaimer: This model is an algorithmic decision-support benchmark on PhysioNet
+     cohorts. It does not constitute clinical diagnostic validity or medical advice.
+================================================================================

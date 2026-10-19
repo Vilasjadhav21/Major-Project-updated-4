@@ -1,0 +1,69 @@
+================================================================================
+        OBJECTIVE 4: IMBALANCE MANAGEMENT & RBF-SVM TUNING REPORT
+================================================================================
+
+1. TRAINING COHORT CLASS DISTRIBUTION (N=260):
+--------------------------------------------------------------------------------
+  Term Records (0):     219 (84.62%)
+  Preterm Records (1):  41 (15.38%)
+  Class Imbalance:      5.34:1
+  Cross-Validation:     5-Fold StratifiedKFold (random_state=42)
+
+2. PHASE 8: IMBALANCE MANAGEMENT STRATEGY COMPARISON:
+--------------------------------------------------------------------------------
+  Strategy A (Class-Weighted Only):
+    * Balanced Accuracy: 0.5952 +/- 0.0600
+    * Preterm Recall:    0.4139 +/- 0.1228
+    * Term Specificity:  0.7764 +/- 0.0644
+    * Precision:         0.2638 +/- 0.0706
+    * F1-Score:          0.3169 +/- 0.0769
+    * ROC-AUC:           0.5940 +/- 0.0649
+
+  Strategy B (RandomOversampling + Weighted SVM):
+    * Balanced Accuracy: 0.6001 +/- 0.0311
+    * Preterm Recall:    0.4417 +/- 0.1333
+    * Term Specificity:  0.7586 +/- 0.1378
+    * Precision:         0.2940 +/- 0.0835
+    * F1-Score:          0.3249 +/- 0.0348
+    * ROC-AUC:           0.5888 +/- 0.0462
+
+  Strategy C (SMOTE + Weighted SVM):
+    * Balanced Accuracy: 0.5553 +/- 0.0879
+    * Preterm Recall:    0.4889 +/- 0.0821
+    * Term Specificity:  0.6218 +/- 0.1286
+    * Precision:         0.2120 +/- 0.0705
+    * F1-Score:          0.2900 +/- 0.0752
+    * ROC-AUC:           0.5640 +/- 0.0789
+
+  Selected Imbalance Strategy: Strategy B (RandomOversampling + Weighted SVM)
+
+3. PHASE 9: RBF-SVM HYPERPARAMETER GRID TUNING:
+--------------------------------------------------------------------------------
+  Grid Search Range: C in [0.01, 0.1, 1, 10, 100, 1000], gamma in ['scale', 0.0001, 0.001, 0.01, 0.1, 1]
+
+Top 10 Configurations by 5-Fold Cross-Validation Balanced Accuracy:
+      C   gamma  bal_acc_mean  bal_acc_std  acc_mean  sens_mean  spec_mean  prec_mean  f1_mean  auc_mean
+   1.00   scale      0.600115     0.031068  0.707692   0.441667   0.758562   0.293961 0.324854  0.588822
+ 100.00   scale      0.599703     0.046607  0.726923   0.413889   0.785518   0.274297 0.328104  0.546650
+   1.00     0.1      0.597789     0.078103  0.703846   0.441667   0.753911   0.289394 0.334806  0.605429
+   0.01     0.1      0.597064     0.062902  0.769231   0.344444   0.849683   0.365556 0.317009  0.479328
+1000.00     0.1      0.595158     0.061805  0.719231   0.413889   0.776427   0.267500 0.321746  0.541847
+   1.00    0.01      0.593760     0.053422  0.780769   0.319444   0.868076   0.378022 0.318095  0.593041
+   0.10   scale      0.591276     0.077054  0.742308   0.369444   0.813108   0.301905 0.307393  0.585383
+  10.00   0.001      0.589215     0.046773  0.773077   0.319444   0.858985   0.352015 0.306779  0.591055
+ 100.00  0.0001      0.584669     0.054572  0.765385   0.319444   0.849894   0.347253 0.303142  0.589222
+   0.10     0.1      0.583322     0.084721  0.746154   0.344444   0.822199   0.346916 0.306667  0.590711
+
+4. FINAL SELECTED HYPERPARAMETER CONFIGURATION:
+--------------------------------------------------------------------------------
+  Imbalance Strategy:   Strategy B (RandomOversampling + Weighted SVM)
+  C:                    1.0
+  gamma:                scale
+  CV Balanced Accuracy: 0.6001 +/- 0.0311
+  CV Overall Accuracy:  0.7077
+  CV Preterm Sensitivity:0.4417
+  CV Term Specificity:  0.7586
+  CV Precision:         0.2940
+  CV F1-score:          0.3249
+  CV ROC-AUC:           0.5888
+================================================================================

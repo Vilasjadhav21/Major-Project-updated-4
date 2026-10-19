@@ -1,0 +1,32 @@
+================================================================================
+        OBJECTIVE 4 — MACHINE LEARNING DATASET SPLIT REPORT        
+================================================================================
+1. SPLIT CONFIGURATION:
+   - Source Dataset: outputs/features/all_records_features.csv
+   - Split Level: Record-level (1 row per pregnancy/record)
+   - Test Size: 0.20 (20%)
+   - Random State: 42
+   - Stratification Target: label (0=Term, 1=Preterm)
+   - Predictors (5): sampen_imf1, median_freq_imf1_hz, rms_imf1, rms_imf2, hilbert_par_imf1
+--------------------------------------------------------------------------------
+2. RECORD & CLASS COUNTS:
+   - Total records:    15
+   - Training records: 12 (80.0%)
+   - Testing records:  3 (20.0%)
+   - Training Term (0):   10
+   - Training Preterm (1): 2
+   - Testing Term (0):    2
+   - Testing Preterm (1):  1
+--------------------------------------------------------------------------------
+3. RECORD OVERLAP & DATA INTEGRITY VERIFICATION:
+   - Record ID overlap count: 0
+   - Record ID disjointness check: PASS (0 overlap)
+   - Unscaled feature check: PASS (raw unscaled values preserved)
+   - No model training performed: PASS
+--------------------------------------------------------------------------------
+4. SPLIT RECORD DETAILS:
+   Training Set Record IDs:
+     tpehg1007, tpehg1021, tpehg1022, tpehg1027, tpehg1031, tpehg1039, tpehg1183, tpehg1188, tpehg1192, tpehg1197, tpehg1201, tpehg1202
+   Testing Set Record IDs:
+     tpehg1029, tpehg1065, tpehg1203
+================================================================================

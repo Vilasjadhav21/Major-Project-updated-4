@@ -1,0 +1,91 @@
+================================================================================
+      OBJECTIVE 4: RAPID 1-MINUTE EHG TRIAGE — MISSING RECORDS DIAGNOSTIC
+================================================================================
+Report Generated: 2026-10-17
+Target Directory: c:\Users\vilasjadhav\Major Project\Objective4_EHG_Rapid_Triage\data\tpehgdb
+Records File:     c:\Users\vilasjadhav\Major Project\Objective4_EHG_Rapid_Triage\data\tpehgdb\RECORDS
+
+1. EXECUTIVE OVERVIEW
+--------------------------------------------------------------------------------
+Total Records in RECORDS:           300
+Successfully Processed Records:     15
+Failed / Missing Records:           285
+Total Missing Individual Files:     567
+  - Missing .hea (header) files:    283
+  - Missing .dat (signal) files:    284
+
+2. FAILURE CLASSIFICATION BREAKDOWN (STEP 3)
+--------------------------------------------------------------------------------
+Category A: Both .hea and .dat missing:                282 records (98.9%)
+Category B: .hea missing (.dat exists locally):          1 records (0.4%)
+Category C: .dat missing (.hea exists locally):          2 records (0.7%)
+Category D: Files exist but WFDB cannot read them:       0 records (0.0%)
+Category E: Other unexpected error:                      0 records (0.0%)
+--------------------------------------------------------------------------------
+Total Failed Records:                                  285 records (100.0%)
+
+3. PARTIALLY DOWNLOADED / ANOMALOUS RECORDS (STEP 4)
+--------------------------------------------------------------------------------
+The audit identified 3 partially downloaded records in the local repository:
+
+  1. Record: tpehg1177 (Category B)
+     - .hea exists: FALSE (0 bytes)
+     - .dat exists: TRUE  (844,800 bytes)
+     - Status: Partial download. Binary signal is present but header file is missing.
+     - Metadata: Gestation = 38.14 weeks, Class = Term (0)
+     - Action Needed: Download missing 'tpehg1177.hea' from PhysioNet.
+
+  2. Record: tpehg1070 (Category C)
+     - .hea exists: TRUE  (1,001 bytes)
+     - .dat exists: FALSE (0 bytes)
+     - Status: Partial download. Header file is present but binary signal is missing.
+     - Metadata: Gestation = 39.57 weeks, Class = Term (0)
+     - Action Needed: Download missing 'tpehg1070.dat' from PhysioNet.
+
+  3. Record: tpehg1205 (Category C)
+     - .hea exists: TRUE  (1,024 bytes)
+     - .dat exists: FALSE (0 bytes)
+     - Status: Partial download. Header file is present but binary signal is missing.
+     - Metadata: Gestation = 38.43 weeks, Class = Term (0)
+     - Action Needed: Download missing 'tpehg1205.dat' from PhysioNet.
+
+4. VERIFICATION OF 15 SUCCESSFUL RECORDS (STEP 4)
+--------------------------------------------------------------------------------
+All 15 successfully processed records are complete, uncorrupted, and verified:
+  - Exactly 12 signal channels present in each header
+  - Sampling frequency is uniformly 20.0 Hz
+  - Record duration: 1,759.0s to 1,773.0s (approx 30 minutes, 35,180 to 35,460 samples)
+  - Triage window (180s-240s) yields exactly 1,200 samples
+  - EMD successfully decomposes signal into IMF-1 and IMF-2
+  - All 5 target features are non-NaN and finite
+  - All 15 records have confirmed matching labels in outputs/features/all_records_features.csv
+
+Record       Fs     Channels   Total Samples   Duration (s)   .hea Size    .dat Size    Label
+tpehg1007    20.0   12         35180           1759.0         1002         844320       Preterm (1)
+tpehg1021    20.0   12         35260           1763.0         1021         846240       Term (0)
+tpehg1022    20.0   12         35240           1762.0         1010         845760       Term (0)
+tpehg1027    20.0   12         35320           1766.0         1010         847680       Term (0)
+tpehg1029    20.0   12         35280           1764.0         1012         846720       Term (0)
+tpehg1031    20.0   12         35180           1759.0         1020         844320       Term (0)
+tpehg1039    20.0   12         35340           1767.0         1005         848160       Term (0)
+tpehg1065    20.0   12         35340           1767.0         1014         848160       Term (0)
+tpehg1183    20.0   12         35320           1766.0         993          847680       Term (0)
+tpehg1188    20.0   12         35260           1763.0         1004         846240       Term (0)
+tpehg1192    20.0   12         35360           1768.0         1021         848640       Term (0)
+tpehg1197    20.0   12         35240           1762.0         1006         845760       Term (0)
+tpehg1201    20.0   12         35460           1773.0         983          851040       Term (0)
+tpehg1202    20.0   12         35320           1766.0         1015         847680       Preterm (1)
+tpehg1203    20.0   12         35240           1762.0         1005         845760       Preterm (1)
+
+5. RECOVERY ROADMAP (FOR STEP 2 DOWNLOADING)
+--------------------------------------------------------------------------------
+To achieve a complete 300-record dataset for Objective 4 without data fabrication:
+  1. Download 283 missing .hea files (282 Category A + 1 Category B [tpehg1177.hea]).
+  2. Download 284 missing .dat files (282 Category A + 2 Category C [tpehg1070.dat, tpehg1205.dat]).
+  3. Total download burden: 567 files (~238 MB).
+  4. Target destination folder: data/tpehgdb/tpehgdb/
+  5. Once synchronized, execute: python src/process_all_records.py
+     This will automatically process all 300 records into all_records_features.csv.
+================================================================================
+END OF MISSING RECORDS DIAGNOSTIC
+================================================================================
